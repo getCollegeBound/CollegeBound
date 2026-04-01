@@ -130,69 +130,17 @@
     .cb-counter-text { font-size: 13px; color: #F9F8F6; font-weight: 400; }
     .cb-counter-text strong { color: #B69559; font-weight: 500; }
 
-    .cb-form { display: flex; flex-direction: column; gap: 12px; }
-
-    .cb-input {
-      width: 100%;
-      padding: 0.875rem 1rem;
-      border: 1.5px solid #ddd;
-      border-radius: 10px;
-      font-size: 14.5px;
-      font-family: 'DM Sans', sans-serif;
-      color: #1a2040;
-      background: white;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .cb-input::placeholder { color: #aaa; }
-    .cb-input:focus { border-color: #323C62; }
-
-    .cb-btn {
-      width: 100%;
-      padding: 0.9rem 1rem;
-      background: #323C62;
-      color: #F9F8F6;
-      border: none;
-      border-radius: 10px;
-      font-size: 14.5px;
-      font-weight: 500;
-      font-family: 'DM Sans', sans-serif;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      letter-spacing: 0.01em;
-    }
-
-    .cb-btn:hover { background: #2a3356; }
-    .cb-btn:active { transform: scale(0.98); }
-    .cb-btn:disabled { background: #aaa; cursor: default; }
-
-    .cb-privacy { font-size: 11.5px; color: #aaa; text-align: center; margin-top: 0.25rem; }
-
-    .cb-success {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      padding: 1rem 0;
-    }
-
-    .cb-success-icon {
-      width: 52px; height: 52px;
-      border-radius: 50%;
-      background: #323C62;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 1.25rem;
-    }
-
-    .cb-success h3 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.4rem;
-      color: #1a2040;
+    .tally-wrapper {
       margin-bottom: 0.5rem;
     }
 
-    .cb-success p { font-size: 14px; color: #777; line-height: 1.6; }
+    .tally-wrapper iframe {
+      width: 100%;
+      border: none;
+      min-height: 120px;
+    }
+
+    .cb-privacy { font-size: 11.5px; color: #aaa; text-align: center; margin-top: 0.25rem; }
 
     .cb-divider { height: 1px; background: #eee; margin: 2rem 0 1.5rem; }
 
@@ -238,21 +186,10 @@
       <span class="cb-counter-text"><strong id="counter-num">1,847</strong> students already on the waitlist</span>
     </div>
 
-    <div class="cb-form" id="form-area">
-      <input class="cb-input" type="email" id="email-input" placeholder="Enter your email address" />
-      <button class="cb-btn" id="submit-btn" onclick="handleSubmit()">Join the waitlist</button>
-      <p class="cb-privacy">No spam. Just your early access invite when we launch.</p>
+    <div class="tally-wrapper">
+      <iframe src="https://tally.so/embed/zxJMv8?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" allowfullscreen></iframe>
     </div>
-
-    <div class="cb-success" id="success-area">
-      <div class="cb-success-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#B69559" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
-      </div>
-      <h3>You're on the list.</h3>
-      <p>We'll email you the moment CollegeBound goes live. You're one of the first.</p>
-    </div>
+    <p class="cb-privacy">No spam. Just your early access invite when we launch.</p>
 
     <div class="cb-divider"></div>
 
@@ -275,43 +212,19 @@
   <p class="cb-footer">© 2026 CollegeBound · Built in Los Angeles</p>
 
   <script>
-   const targets = [1847, 1852, 1839, 1861, 1844, 1858];
-let idx = 0;
-setInterval(() => {
-  idx = (idx + 1) % targets.length;
-  document.getElementById('counter-num').textContent = targets[idx].toLocaleString();
-}, 7000);
+    const targets = [1847, 1852, 1839, 1861, 1844, 1858];
+    let idx = 0;
+    setInterval(() => {
+      idx = (idx + 1) % targets.length;
+      document.getElementById('counter-num').textContent = targets[idx].toLocaleString();
+    }, 7000);
 
-async function handleSubmit() {
-  const email = document.getElementById('email-input').value.trim();
-  if (!email || !email.includes('@')) {
-    document.getElementById('email-input').style.borderColor = '#e24b4a';
-    document.getElementById('email-input').focus();
-    return;
-  }
-  document.getElementById('submit-btn').disabled = true;
-  document.getElementById('submit-btn').textContent = 'Joining...';
-  try {
-    const formData = new FormData();
-    formData.append('email', email);
-    await fetch('https://tally.so/r/zxJMv8', {
-      method: 'POST',
-      mode: 'no-cors',
-      body: formData
+    window.addEventListener('message', (e) => {
+      if (e.data && e.data.includes && e.data.includes('Tally.FormSubmitted')) {
+        document.querySelector('.tally-wrapper').innerHTML = '<div style="text-align:center;padding:1rem 0"><div style="width:52px;height:52px;border-radius:50%;background:#323C62;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem"><svg viewBox="0 0 24 24" fill="none" stroke="#B69559" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><polyline points="20 6 9 17 4 12"/></svg></div><p style="font-family:DM Serif Display,serif;font-size:1.4rem;color:#1a2040;margin-bottom:.5rem">You\'re on the list.</p><p style="font-size:14px;color:#777;line-height:1.6">We\'ll email you the moment CollegeBound goes live.</p></div>';
+        document.querySelector('.cb-privacy').style.display = 'none';
+      }
     });
-  } catch(e) {}
-  document.getElementById('form-area').style.display = 'none';
-  const s = document.getElementById('success-area');
-  s.style.display = 'flex';
-}
-
-document.getElementById('email-input').addEventListener('input', () => {
-  document.getElementById('email-input').style.borderColor = '#ddd';
-});
-
-document.getElementById('email-input').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') handleSubmit();
-});
   </script>
 
 </body>
